@@ -53,5 +53,5 @@ while true; do
         fi
     fi
 
-    sleep 2
+    sleep 0.5
 done
