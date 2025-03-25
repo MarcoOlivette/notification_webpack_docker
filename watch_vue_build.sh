@@ -61,7 +61,7 @@ while true; do
         while IFS= read -r line; do
             TS=$(echo "$line" | awk '{print $1}')
             DIFF=$((NOW - TS))
-            if ((DIFF < 1800)); then
+            if ((DIFF < 3)); then
                 echo "$line" >>"$TMP_FILE"
             fi
         done <"$HISTORY_FILE"
@@ -72,10 +72,8 @@ while true; do
             # Se ainda não foi registrado esse erro, notifica e cria o flag
             if [[ ! -f "$ERROR_FLAG_FILE" ]]; then
                 echo "❌ Erro detectado na compilação às $NOW_HUMAN"
-                echo "$ERROR_LINE"
                 echo "error detected" >"$ERROR_FLAG_FILE"
-
-                ERROR_SUMMARY=$(echo "$LOG" | grep -A 5 "Module build failed" | head -n 6)
+                ERROR_SUMMARY=$(echo "$LOG" | grep -A 10 -E "Module (Error|build failed)|Errors compiling template" | head -n 30)
                 notify-send \
                     --icon="$ICON_PATH" \
                     "❌ Webpack com erro no container $CONTAINER_NAME" \
