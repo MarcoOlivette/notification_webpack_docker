@@ -40,7 +40,6 @@ while true; do
 
     # Linha de sucesso (sempre pega do LOG atual, que pode ter sido atualizado)
     COMPILE_LINE=$(echo "$LOG" | grep "$SUCCESS_LINE" | tail -n 1)
-    echo "$HAS_ERROR"
     if [[ -n "$COMPILE_LINE" ]]; then
         NOW=$(date +%s)
         NOW_HUMAN=$(date '+%d/%m/%Y %H:%M:%S')
