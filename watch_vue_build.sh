@@ -50,22 +50,11 @@ while true; do
             LAST_LINE=$(tail -n 1 "$HISTORY_FILE")
             LAST_TIMESTAMP=$(echo "$LAST_LINE" | awk '{print $1}')
             AGE=$((NOW - LAST_TIMESTAMP))
-            if ((AGE > 3)); then
+            if ((AGE > 1800)); then
                 rm -f "$HISTORY_FILE"
                 echo "$LAST_LINE" >"$HISTORY_FILE"
             fi
         fi
-
-        TMP_FILE=$(mktemp)
-        while IFS= read -r line; do
-            TS=$(echo "$line" | awk '{print $1}')
-            DIFF=$((NOW - TS))
-            if ((DIFF < 3)); then
-                echo "$line" >>"$TMP_FILE"
-            fi
-        done <"$HISTORY_FILE"
-        cp "$TMP_FILE" "$HISTORY_FILE"
-        rm -f "$TMP_FILE"
 
         if [[ "$HAS_ERROR" == "1" ]]; then
             # Se ainda não foi registrado esse erro, notifica e cria o flag
@@ -87,7 +76,7 @@ while true; do
             fi
 
             # Notificação de sucesso (sem alteração)
-            if ! grep -q "$ENTRY_HASH" "$HISTORY_FILE"; then
+            if ! awk '{print $2}' "$HISTORY_FILE" | grep -q "$ENTRY_HASH"; then
                 echo "$NOW $ENTRY_HASH" >>"$HISTORY_FILE"
                 echo "✅ Nova build detectada às $NOW_HUMAN"
                 echo "ℹ️ $COMPILE_LINE"
@@ -96,6 +85,7 @@ while true; do
                     --icon="$ICON_PATH" \
                     "🧱 Webpack finalizado no container $CONTAINER_NAME" \
                     "📦 $COMPILE_LINE\n🕒 $NOW_HUMAN"
+
             fi
         fi
 
